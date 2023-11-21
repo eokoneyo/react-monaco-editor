@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useCallback, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import MonacoEditor, { MonacoDiffEditor } from "react-monaco-editor";
 
@@ -266,6 +266,44 @@ class DiffEditor extends React.Component {
   }
 }
 
+const FunctionalComponentEditor = ({ code = '// type your code...', readOnly }) => {
+  const editor = useRef();
+
+  const editorDidMount = useCallback((editor, monaco) => {
+    console.log('editorDidMount', editor);
+    editor.current = editor;
+    editor.current.focus();
+  }, []);
+
+  useEffect(() => {
+    if (editor.current) {
+      console.log('current language:: %o \n', editor.current.getLanguageID())
+    }
+  }, [editor.current]);
+
+  const onChange = (newValue, e) => {
+    console.log('onChange', newValue, e);
+  };
+
+  const options = {
+    readOnly,
+    selectOnLineNumbers: true
+  };
+
+  return (
+    <MonacoEditor
+      width="800"
+      height="600"
+      language="javascript"
+      theme="vs-light"
+      value={code}
+      options={options}
+      onChange={onChange}
+      editorDidMount={editorDidMount}
+    />
+  );
+}
+
 const App = () => (
   <div>
     <h2>Monaco Editor Sample (controlled mode)</h2>
@@ -279,6 +317,8 @@ const App = () => (
     <hr />
     <h2>Another editor (showing a diff)</h2>
     <DiffEditor />
+    <h2>Yet another editor, only this time it's functional</h2>
+    <FunctionalComponentEditor readOnly />
   </div>
 );
 
